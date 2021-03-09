@@ -11,6 +11,9 @@ weights = [n_hidden, n_features]
 """
 
 class NeuralNetworkMLP:
+    """
+    
+    """
     def __init__(self, lr = 0.01, epochs = 100, l2 = 0, batch_size=4):
         self.lr = lr
         self.epochs = epochs
@@ -48,13 +51,12 @@ class NeuralNetworkMLP:
 
                 z_hidden, a_hidden, z_out, a_out = self._forward(X[batches_indices])
 
-
+                print(X[batches_indices].shape)
 
                 #backpropagation
 
                 # delta = self._cost_SSE_derivative(y[batches_indices], a_out) * self._sigmoid_derivative(z_out)
                 delta = self._cost_CE_derivative(y[batches_indices], a_out) * self._sigmoid_derivative(z_out)
-
 
                 sigma_bias_out = np.sum(delta, axis=0)
                 sigma_weights_out = np.dot(a_hidden.T, delta)
