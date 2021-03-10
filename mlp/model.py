@@ -49,9 +49,7 @@ if __name__ == '__main__':
 
     X, y = load_iris(return_X_y=True)
 
-    print(X.shape)
-
     nn = MultiLayerPerceptron()
-    nn.add_layer(30, 'sigmoid')
+    nn.add_layer(30, 'sigmoid', input_length=4)
 
     print(nn.layers)
