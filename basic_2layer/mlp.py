@@ -12,7 +12,7 @@ weights = [n_hidden, n_features]
 
 class NeuralNetworkMLP:
     """
-    
+    Simple neural network with 2 layers.
     """
     def __init__(self, lr = 0.01, epochs = 100, l2 = 0, batch_size=4):
         self.lr = lr
@@ -50,8 +50,6 @@ class NeuralNetworkMLP:
                 batches_indices = indices[index:index + self.batch_size]
 
                 z_hidden, a_hidden, z_out, a_out = self._forward(X[batches_indices])
-
-                print(X[batches_indices].shape)
 
                 #backpropagation
 
