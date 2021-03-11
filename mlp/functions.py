@@ -13,12 +13,20 @@ def sigmoid_derivative(z):
     """
     return sigmoid(z) * (1. - sigmoid(z))
 
+def relu(z):
+    return np.maximum(z, 0)
+
+def relu_derivative(z):
+    return np.where(z >= 0, 1, 0)
+
 ACTIVATIONS = {
-    'sigmoid' : sigmoid
+    'sigmoid' : sigmoid,
+    'relu' : relu
 }
 
 ACT_DERIVATIVES = {
-    'sigmoid' : sigmoid_derivative
+    'sigmoid' : sigmoid_derivative,
+    'relu' : relu_derivative
 }
 
 """
@@ -51,12 +59,21 @@ def cross_entropy_derivative(y, output):
     """
     return (output - y) / ((1. - output) * output)
 
+def hellinger_distance(y, output):
+    cost = 1 / np.sqrt(2) * np.sum(np.square(np.sqrt(output) - np.sqrt(y)))
+    return cost
+
+def hellinger_distance_derivative(y, output):
+    return (np.sqrt(output) - np.sqrt(y)) / (np.sqrt(2) * np.sqrt(output))
+
 LOSS = {
     'sse' : sse,
-    'cross-entropy' : cross_entropy
+    'cross-entropy' : cross_entropy,
+    'hellinger' : hellinger_distance
 }
 
 LOSS_DERIVATIVE = {
     'sse' : sse_derivative,
-    'cross-entropy' : cross_entropy_derivative
+    'cross-entropy' : cross_entropy_derivative,
+    'hellinger' : hellinger_distance_derivative
 }

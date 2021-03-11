@@ -1,6 +1,7 @@
 import numpy as np 
 from functions import ACTIVATIONS, ACT_DERIVATIVES
 from preprocessing import OneHotEncoder
+from metrics.classification import accuracy_score
 
 
 class Layer:
@@ -15,10 +16,10 @@ class Layer:
 
     def forward(self, X):
         
-        self.z = np.dot(X, self.weight) + self.bias
-        self.a = self.activation(self.z)
+        z = np.dot(X, self.weight) + self.bias
+        a = self.activation(z)
 
-        return self.z, self.a
+        return z, a
 
     def backward(self, delta, previous_a, previous_z = None):
         try:
@@ -32,10 +33,10 @@ class Layer:
 
             return delta
 
-        except:
+        except: 
 
             sigma_bias = np.sum(delta, axis=0)
-            sigma_weight= np.dot(previous_a.T, delta) + self.l2 * self.weight
+            sigma_weight = np.dot(previous_a.T, delta) + self.l2 * self.weight
 
             self.weight -= self.lr * sigma_weight 
             self.bias -= self.lr * sigma_bias
@@ -45,22 +46,24 @@ class Layer:
 
 if __name__ == '__main__':
 
-    from sklearn.datasets import load_iris
+    from sklearn.datasets import load_digits
 
-    X, y = load_iris(return_X_y=True)
+    X, y = load_digits(return_X_y=True)
 
     n_samples, n_featues = X.shape
 
     lay1 = Layer(30, n_featues, lr=0.01)
-    lay2 = Layer(10, 30, lr=0.01)
-    lay3 = Layer(3, 10, lr= 0.01)
+    lay2 = Layer(10, lay1.n_neuron, lr=0.01)
+    lay3 = Layer(10, lay2.n_neuron, lr= 0.01)
 
+    from copy import copy
+    y_true = copy(y)
     y = OneHotEncoder().encode(y)
 
     def cost_der(y_true, output):
         return (output - y_true) 
 
-    for _ in range(50):
+    for _ in range(600):
         z1, a1 = lay1.forward(X)
         z2, a2 = lay2.forward(a1)
         z3, a3 = lay3.forward(a2)
@@ -74,6 +77,9 @@ if __name__ == '__main__':
 
         lay1.backward(delta, X)
 
-    
-
+    z1, a1 = lay1.forward(X)
+    z2, a2 = lay2.forward(a1)
+    z3, a3 = lay3.forward(a2)
+    pred = np.argmax(z3, axis=1)
+    print(accuracy_score(y_true, pred))
 

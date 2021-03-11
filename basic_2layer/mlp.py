@@ -183,7 +183,7 @@ from sklearn.model_selection import train_test_split
 X, y = load_digits(return_X_y=True)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-nn = NeuralNetworkMLP()
+nn = NeuralNetworkMLP(epochs=100, batch_size=2)
 
 nn.fit(X_train, y_train, (X_test, y_test))
 
