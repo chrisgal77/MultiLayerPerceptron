@@ -11,10 +11,10 @@ weights = [n_hidden, n_features]
 """
 
 class NeuralNetworkMLP:
-    def __init__(self, lr = 0.01, epochs = 100, l2 = 0, batch_size=4):
+    def __init__(self, lr = 0.01, epochs = 100, l2 = 0, batch_size=10):
         self.lr = lr
         self.epochs = epochs
-        self.n_hidden = 50
+        self.n_hidden = 100
         self.l2 = l2
         self.batch_size = batch_size
 
@@ -54,7 +54,6 @@ class NeuralNetworkMLP:
 
                 # delta = self._cost_SSE_derivative(y[batches_indices], a_out) * self._sigmoid_derivative(z_out)
                 delta = self._cost_CE_derivative(y[batches_indices], a_out) * self._sigmoid_derivative(z_out)
-
 
                 sigma_bias_out = np.sum(delta, axis=0)
                 sigma_weights_out = np.dot(a_hidden.T, delta)
@@ -177,13 +176,16 @@ class NeuralNetworkMLP:
 def accuracy(y_true, y_pred):
     return np.sum(y_true == y_pred) / len(y_true)
 
+def bad_ones(y_true, y_pred):
+    pass
+
 from sklearn.datasets import load_digits
 from sklearn.model_selection import train_test_split
 
 X, y = load_digits(return_X_y=True)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-nn = NeuralNetworkMLP()
+nn = NeuralNetworkMLP(batch_size=4)
 
 nn.fit(X_train, y_train, (X_test, y_test))
 
