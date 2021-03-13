@@ -11,7 +11,10 @@ weights = [n_hidden, n_features]
 """
 
 class NeuralNetworkMLP:
-    def __init__(self, lr = 0.01, epochs = 100, l2 = 0, batch_size=10):
+    """
+    Simple neural network with 2 layers.
+    """
+    def __init__(self, lr = 0.01, epochs = 100, l2 = 0, batch_size=4):
         self.lr = lr
         self.epochs = epochs
         self.n_hidden = 100
@@ -47,8 +50,6 @@ class NeuralNetworkMLP:
                 batches_indices = indices[index:index + self.batch_size]
 
                 z_hidden, a_hidden, z_out, a_out = self._forward(X[batches_indices])
-
-
 
                 #backpropagation
 
@@ -185,7 +186,7 @@ from sklearn.model_selection import train_test_split
 X, y = load_digits(return_X_y=True)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-nn = NeuralNetworkMLP(batch_size=4)
+nn = NeuralNetworkMLP(epochs=100, batch_size=2)
 
 nn.fit(X_train, y_train, (X_test, y_test))
 
