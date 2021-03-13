@@ -2,9 +2,9 @@ import numpy as np
 from tqdm import tqdm
 from preprocessing.encoders import OneHotEncoder
 from functions import LOSS, LOSS_DERIVATIVE
-from layer import Layer
 import matplotlib.pyplot as plt 
-from metrics.classification import accuracy_score
+from metrics.classification import accuracy_score, cross_val_score
+from layer import Layer
 
 class MultiLayerPerceptron:
     def __init__(self, lr = 0.001, l2 = 0.01, epochs = 50, batch_size = 16, loss = 'sse'):
@@ -40,6 +40,7 @@ class MultiLayerPerceptron:
         plt.plot(range(self.epochs), _cost)
         plt.show()
         
+        return self
 
     def add_layer(self, n_neuron = 30, activation = 'sigmoid', input_length = None):
         if not self.layers and not input_length:
@@ -77,17 +78,20 @@ if __name__ == '__main__':
     from sklearn.model_selection import train_test_split
 
     X, y = load_digits(return_X_y=True)
+    print(X.shape)
+    plt.imshow(X[8].reshape(8,-1))
+    plt.show()
 
     n_output = np.unique(y).shape[0]
     n_samples, n_features = X.shape
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-    nn = MultiLayerPerceptron(loss='cross-entropy', epochs=100, batch_size=4)
+    nn = MultiLayerPerceptron(loss='sse', epochs=100, batch_size=4)
     nn.add_layer(50, 'sigmoid', input_length=n_features)
     nn.add_layer(n_output, 'sigmoid')
 
     nn.fit(X_train, y_train)
 
     pred = nn.predict(X_test)
-    print(accuracy_score(y_test, pred))  
+    print(accuracy_score(y_test, pred))
