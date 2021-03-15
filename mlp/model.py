@@ -37,8 +37,8 @@ class MultiLayerPerceptron:
             self._forward(X)
             _cost.append(self.loss(y_enc, self.a[-1]))
         
-        plt.plot(range(self.epochs), _cost)
-        plt.show()
+        # plt.plot(range(self.epochs), _cost)
+        # plt.show()
         
         return self
 
@@ -87,11 +87,13 @@ if __name__ == '__main__':
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-    nn = MultiLayerPerceptron(loss='sse', epochs=100, batch_size=4)
-    nn.add_layer(50, 'sigmoid', input_length=n_features)
+    nn = MultiLayerPerceptron(loss='cross-entropy', epochs=100, batch_size=4)
+    nn.add_layer(50, 'relu', input_length=n_features)
     nn.add_layer(n_output, 'sigmoid')
 
-    nn.fit(X_train, y_train)
+    # nn.fit(X_train, y_train)
 
-    pred = nn.predict(X_test)
-    print(accuracy_score(y_test, pred))
+    # pred = nn.predict(X_test)
+    # print(accuracy_score(y_test, pred))
+    
+    print(cross_val_score(nn, X, y))
