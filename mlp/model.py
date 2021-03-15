@@ -72,28 +72,26 @@ class MultiLayerPerceptron:
         self._forward(X)
         return np.argmax(self.z[-1] , axis=1)
   
-if __name__ == '__main__':
-
+def build_model():
+    
     from sklearn.datasets import load_digits
     from sklearn.model_selection import train_test_split
-
+    
     X, y = load_digits(return_X_y=True)
-    print(X.shape)
-    plt.imshow(X[8].reshape(8,-1))
-    plt.show()
-
     n_output = np.unique(y).shape[0]
     n_samples, n_features = X.shape
-
+    
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
     nn = MultiLayerPerceptron(loss='cross-entropy', epochs=100, batch_size=4)
     nn.add_layer(50, 'relu', input_length=n_features)
     nn.add_layer(n_output, 'sigmoid')
-
-    # nn.fit(X_train, y_train)
-
-    # pred = nn.predict(X_test)
-    # print(accuracy_score(y_test, pred))
     
-    print(cross_val_score(nn, X, y))
+    nn.fit(X_train, y_train)
+    pred = nn.predict(X_test)
+    print(accuracy_score(y_test, pred))
+    
+    # print(cross_val_score(nn, X, y))  
+  
+if __name__ == '__main__':
+    
+    build_model()
