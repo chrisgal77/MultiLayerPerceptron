@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from metrics.classification import accuracy_score
 
 class MultiLayerPerceptron:
-    def __init__(self, lr = 0.001, l2 = 0.01, epochs = 50, batch_size = 16, loss = 'sse'):
+    def __init__(self, lr = 0.001, l2 = 0.01, epochs = 50, batch_size = 16, loss = 'cross-entropy'):
         self.lr = lr
         self.l2 = l2
         self.epochs = epochs
@@ -18,12 +18,17 @@ class MultiLayerPerceptron:
 
         self.layers = []
 
-    def fit(self, X, y):
+    def fit(self, X, y, valid_data=None):
         
         y_enc = OneHotEncoder().encode(y)
         _cost = []
-        for _ in tqdm(range(self.epochs)):
 
+        if valid_data:
+            X_valid, y_valid = valid_data
+            _valid_acc = []
+
+        for _ in tqdm(range(self.epochs)):
+ 
             indices = np.arange(X.shape[0])
             np.random.shuffle(indices)         
 
@@ -36,18 +41,31 @@ class MultiLayerPerceptron:
 
             self._forward(X)
             _cost.append(self.loss(y_enc, self.a[-1]))
+
+            pred = self.predict(X_valid)
+            _valid_acc.append(accuracy_score(y_valid, pred))
+
         
         plt.plot(range(self.epochs), _cost)
+        plt.xlabel('epoch')
+        plt.ylabel('cost')
         plt.show()
+
+        if valid_data:
+            plt.plot(range(self.epochs), _valid_acc)
+            plt.xlabel('epoch')
+            plt.ylabel('validation accuracy')
+            plt.show()
+            print('validation accuracy score : %.2f' %_valid_acc[-1])
         
 
     def add_layer(self, n_neuron = 30, activation = 'sigmoid', input_length = None):
         if not self.layers and not input_length:
             raise ValueError('First layer must have an input length')
         if not input_length: 
-            self.layers.append(Layer(n_neuron, self.layers[-1].n_neuron, lr = self.lr, activation = activation))
+            self.layers.append(Layer(n_neuron, self.layers[-1].n_neuron, lr = self.lr, activation = activation, l2 = self.l2))
         else:
-            self.layers.append(Layer(n_neuron, input_length, lr = self.lr, activation = activation))
+            self.layers.append(Layer(n_neuron, input_length, lr = self.lr, activation = activation, l2 = self.l2))
 
     def _forward(self, X):
 
@@ -58,8 +76,8 @@ class MultiLayerPerceptron:
         for idx in range(1, len(self.layers)):
             z, a = self.layers[idx].forward(a)
             self.z.append(z)
-            self.a.append(a)
-   
+            self.a.append(a) 
+            
     def _backprop(self, X, y):
         
         delta = self.loss_derivative(y, self.a[-1]) * self.layers[-1].act_derivative(self.z[-1])
@@ -72,7 +90,7 @@ class MultiLayerPerceptron:
         return np.argmax(self.z[-1] , axis=1)
   
 if __name__ == '__main__':
-
+    
     from sklearn.datasets import load_digits
     from sklearn.model_selection import train_test_split
 
@@ -83,11 +101,8 @@ if __name__ == '__main__':
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-    nn = MultiLayerPerceptron(loss='cross-entropy', epochs=100, batch_size=4)
-    nn.add_layer(50, 'sigmoid', input_length=n_features)
+    nn = MultiLayerPerceptron(loss='sse', epochs=100, batch_size=4)
+    nn.add_layer(50, 'relu', input_length=n_features)
     nn.add_layer(n_output, 'sigmoid')
 
-    nn.fit(X_train, y_train)
-
-    pred = nn.predict(X_test)
-    print(accuracy_score(y_test, pred))  
+    nn.fit(X_train, y_train, valid_data=(X_test, y_test))
