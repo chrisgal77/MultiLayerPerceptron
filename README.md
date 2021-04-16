@@ -5,12 +5,18 @@ MultiLayer Perceptron is a widely used neural network, which consist of one inpu
 be used to classify sets which are not linearly separated.
 
 # Installation
+You can install all dependencies with:
 
 ```
 $ pip install requirements.py
 ```
 
-## Python libraries used in project
+### Python libraries used in project
 Project is created with:
 * numpy 1.19.5
 * scikit-learn 0.24.1 which provides datasets.
+
+# How to use
+You can create model and add new layers. There is a few activation and cost functions. There is also accuracy score and cross validation to
+check your model performance.
+
