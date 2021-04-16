@@ -15,3 +15,6 @@ class OneHotEncoder:
             onehot[value, i] = 1.
         
         return onehot.T
+
+
+        

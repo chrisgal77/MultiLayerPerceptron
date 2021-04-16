@@ -2,12 +2,13 @@ import numpy as np
 from tqdm import tqdm
 from preprocessing.encoders import OneHotEncoder
 from functions import LOSS, LOSS_DERIVATIVE
-from layer import Layer
 import matplotlib.pyplot as plt 
-from metrics.classification import accuracy_score
+from metrics.classification import accuracy_score, cross_val_score
+from layer import Layer
 
 class MultiLayerPerceptron:
     def __init__(self, lr = 0.001, l2 = 0.01, epochs = 50, batch_size = 16, loss = 'cross-entropy'):
+
         self.lr = lr
         self.l2 = l2
         self.epochs = epochs
@@ -46,18 +47,10 @@ class MultiLayerPerceptron:
             _valid_acc.append(accuracy_score(y_valid, pred))
 
         
-        plt.plot(range(self.epochs), _cost)
-        plt.xlabel('epoch')
-        plt.ylabel('cost')
-        plt.show()
-
-        if valid_data:
-            plt.plot(range(self.epochs), _valid_acc)
-            plt.xlabel('epoch')
-            plt.ylabel('validation accuracy')
-            plt.show()
-            print('validation accuracy score : %.2f' %_valid_acc[-1])
+        # plt.plot(range(self.epochs), _cost)
+        # plt.show()
         
+        return self
 
     def add_layer(self, n_neuron = 30, activation = 'sigmoid', input_length = None):
         if not self.layers and not input_length:
@@ -89,20 +82,32 @@ class MultiLayerPerceptron:
         self._forward(X)
         return np.argmax(self.z[-1] , axis=1)
   
-if __name__ == '__main__':
+def build_model():
     
     from sklearn.datasets import load_digits
     from sklearn.model_selection import train_test_split
-
+    
     X, y = load_digits(return_X_y=True)
-
     n_output = np.unique(y).shape[0]
     n_samples, n_features = X.shape
-
+    
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
-    nn = MultiLayerPerceptron(loss='sse', epochs=100, batch_size=4)
+    nn = MultiLayerPerceptron(loss='cross-entropy', epochs=100, batch_size=4)
     nn.add_layer(50, 'relu', input_length=n_features)
     nn.add_layer(n_output, 'sigmoid')
-
-    nn.fit(X_train, y_train, valid_data=(X_test, y_test))
+    
+    nn.fit(X_train, y_train, (X_test, y_test))
+    pred = nn.predict(X_test)
+    print(accuracy_score(y_test, pred))
+    
+    import matplotlib.pyplot as plt 
+    
+    plt.imshow(X[0].reshape(8, -1))
+    plt.show()
+    
+    # print(cross_val_score(nn, X, y))  
+  
+if __name__ == '__main__':
+    
+    build_model()
+    

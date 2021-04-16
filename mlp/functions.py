@@ -18,15 +18,24 @@ def relu(z):
 
 def relu_derivative(z):
     return np.where(z >= 0, 1, 0)
+    
+def lrelu(z, alpha = 0.0001):
+    return z * alpha if z < 0 else z
+
+def lrelu_derivative(z, alpha=0.0001):
+    return alpha if z < 0 else 1
+
 
 ACTIVATIONS = {
     'sigmoid' : sigmoid,
-    'relu' : relu
+    'relu' : relu,
+    'leaky_relu' : lrelu
 }
 
 ACT_DERIVATIVES = {
     'sigmoid' : sigmoid_derivative,
-    'relu' : relu_derivative
+    'relu' : relu_derivative,
+    'leaky_relu' : lrelu_derivative
 }
 
 """
