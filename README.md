@@ -8,7 +8,7 @@ be used to classify sets which are not linearly separated.
 You can install all dependencies with:
 
 ```
-$ pip install requirements.py
+$ pip install -r requirements.py
 ```
 
 ### Python libraries used in project
